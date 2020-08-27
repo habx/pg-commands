@@ -1,0 +1,112 @@
+version: 2.1
+
+# --- Anchor alias ---- #
+alias:
+
+  # - Docker configuration - #
+  - &docker_golang_configuration
+    docker:
+      - image: circleci/golang
+        user: root
+  - &docker_golang_with_postgres_configuration
+    docker:
+      - image: circleci/golang
+        user: root
+      - image: habx/postgres
+        name: postgres
+        environment:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: azerty
+          POSTGRES_DB: test-db
+
+  # - Jobs filters - #
+  - &filters_allow_tags_all_branch
+    tags:
+      only: /^v.*/
+    branches:
+      only: /.*/
+# --- Anchor alias ---- #
+  - &golang_with_cache_restore_deps
+    restore_cache:
+      keys:
+        - >-
+          golang-deps-prod-{{ .Branch }}-{{ checksum "go.mod" }}
+        - >-
+          golang-deps-prod-{{ .Branch }}
+        - >-
+          golang-deps-prod
+  - &golang_with_cache_save_deps
+    save_cache:
+      key: >-
+        golang-deps-prod-{{ .Branch }}-{{ checksum "go.mod" }}
+      paths:
+        - "/go/pkg/mod"
+  - &golang_get_mod
+    run:
+      name: mod download
+      command: |
+        GO111MODULE=on go mod download
+        GO111MODULE=on go mod vendor
+
+jobs:
+  static-test:
+    <<: *docker_golang_configuration
+    working_directory: /go/src/github.com/habx/pg-commands
+    steps:
+      - checkout
+      - *golang_with_cache_restore_deps
+      - *golang_get_mod
+      - *golang_with_cache_save_deps
+      - run:
+          name: Download golang golangci-lint
+          command: |
+            curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.21.0
+      - run:
+          name: Exec tests
+          command: |
+            golangci-lint run
+  test:
+    <<: *docker_golang_with_postgres_configuration
+    working_directory: /go/src/github.com/habx/pg-commands
+    steps:
+      - checkout
+      - *golang_with_cache_restore_deps
+      - *golang_get_mod
+      - *golang_with_cache_save_deps
+      - run:
+          name: "Create a temp directory for artifacts"
+          command: |
+            mkdir -p /tmp/artifacts
+      - run:
+          name: Exec tests
+          command: |
+            go run tests/fixtures/scripts/install-deps/install-deps.go
+            go run tests/fixtures/scripts/init-database/init-database.go
+            go test -v $(go list ./... | grep -v "vendor") -cover -p=1 -coverprofile=c.out
+            go tool cover -html=c.out -o coverage.html
+            mv coverage.html /tmp/artifacts
+          environment:
+            HABX_ENV: test
+            TEST_DB_HOST: postgres
+            TEST_DB_NAME: dev_example
+            TEST_DB_USER: dev_example
+            TEST_DB_PASS: password
+            POSTGRES_USER: test
+            POSTGRES_PASSWORD: azerty
+            POSTGRES_DB: test-db
+      - store_artifacts:
+          path: /tmp/artifacts
+
+# --- END --- #
+# --------------------------------------------------- #
+# -------------- DEFINE YOUR WORKFLOW --------------- #
+# --------------------------------------------------- #
+workflows:
+  tests:
+    jobs:
+      - static-test:
+          filters:
+            <<: *filters_allow_tags_all_branch
+      - test:
+          filters:
+            <<: *filters_allow_tags_all_branch
