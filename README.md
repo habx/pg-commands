@@ -2,7 +2,6 @@
 
 [![Release](https://img.shields.io/github/v/release/habx/pg-commands)](https://github.com/habx/pg-commands/releases/latest)
 [![Go version](https://img.shields.io/github/go-mod/go-version/habx/pg-commands/dev)](https://golang.org/doc/devel/release.html)
-[![Docker](https://img.shields.io/docker/pulls/habx/pg-commands)](https://hub.docker.com/r/habx/pg-commands)
 [![CircleCI](https://img.shields.io/circleci/build/github/habx/pg-commands/dev)](https://app.circleci.com/pipelines/github/habx/pg-commands)
 [![License](https://img.shields.io/github/license/habx/pg-commands)](/LICENSE)
 
