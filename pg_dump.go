@@ -20,6 +20,8 @@ type Dump struct {
 	*Postgres
 	// Verbose mode
 	Verbose bool
+	// Path: setup path dump out
+	Path string
 	// Format: output file format (custom, directory, tar, plain text (default))
 	Format *string
 	// Extra pg_dump x.FullOptions
@@ -37,7 +39,7 @@ func NewDump(pg *Postgres) *Dump {
 func (x *Dump) Exec() Result {
 	result := Result{Mine: "application/x-tar"}
 	result.File = x.newFileName()
-	options := append(x.dumpOptions(), fmt.Sprintf(`-f%v`, result.File))
+	options := append(x.dumpOptions(), fmt.Sprintf(`-f%s%v`, x.Path,result.File))
 	result.FullCommand = strings.Join(options, " ")
 	cmd := exec.Command(PGDumpCmd, options...)
 	cmd.Env = append(os.Environ(), x.EnvPassword)
@@ -62,6 +64,10 @@ func (x *Dump) EnableVerbose() {
 
 func (x *Dump) SetupFormat(f string) {
 	x.Format = &f
+}
+
+func (x *Dump) SetPath(path string) {
+	x.Path = path
 }
 
 func (x *Dump) newFileName() string {

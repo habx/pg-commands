@@ -19,6 +19,8 @@ type Restore struct {
 	Verbose bool
 	// Role: do SET ROLE before restore
 	Role string
+	// Path: setup path for source restore
+	Path string
 	// Extra pg_dump options
 	// e.g []string{"--inserts"}
 	Options []string
@@ -31,7 +33,7 @@ func NewRestore(pg *Postgres) *Restore {
 // Exec `pg_restore` of the specified database, and restore from a gzip compressed tarball archive.
 func (x *Restore) Exec(filename string) Result {
 	result := Result{}
-	options := append(x.restoreOptions(), filename)
+	options := append(x.restoreOptions(), fmt.Sprintf("%s%s", x.Path, filename))
 	result.FullCommand = strings.Join(options, " ")
 	cmd := exec.Command(PGRestoreCmd, options...)
 
@@ -53,6 +55,10 @@ func (x *Restore) ResetOptions() {
 
 func (x *Restore) EnableVerbose() {
 	x.Verbose = true
+}
+
+func (x *Restore) SetPath(path string) {
+	x.Path = path
 }
 
 func (x *Restore) restoreOptions() []string {
