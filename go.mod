@@ -1,6 +1,6 @@
 module github.com/habx/pg-commands
 
-go 1.14
+go 1.15
 
 require (
 	github.com/go-pg/pg v8.0.7+incompatible
