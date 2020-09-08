@@ -31,21 +31,22 @@ func NewRestore(pg *Postgres) *Restore {
 }
 
 // Exec `pg_restore` of the specified database, and restore from a gzip compressed tarball archive.
-func (x *Restore) Exec(filename string) Result {
+func (x *Restore) Exec(filename string, opts ExecOptions) Result {
 	result := Result{}
 	options := append(x.restoreOptions(), fmt.Sprintf("%s%s", x.Path, filename))
 	result.FullCommand = strings.Join(options, " ")
 	cmd := exec.Command(PGRestoreCmd, options...)
 
 	cmd.Env = append(os.Environ(), x.EnvPassword)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		result.Error = &ResultError{Err: err, CmdOutput: string(out)}
-		if exitError, ok := err.(*exec.ExitError); ok {
-			result.Error.ExitCode = exitError.ExitCode()
-		}
+	stderrIn, _ := cmd.StderrPipe()
+	go func() {
+		result.Output = streamExecOutput(stderrIn, opts)
+	}()
+	cmd.Start()
+	err := cmd.Wait()
+	if exitError, ok := err.(*exec.ExitError); ok {
+		result.Error = &ResultError{Err: err, ExitCode: exitError.ExitCode(), CmdOutput: result.Output}
 	}
-	result.Output = string(out)
 	return result
 }
 
