@@ -27,7 +27,7 @@ func TestNewDump(t *testing.T) {
 func TestDump(t *testing.T) {
 	Convey("Create standard dump", t, func() {
 		dump := pg.NewDump(fixtures.Setup())
-		result := dump.Exec()
+		result := dump.Exec(pg.ExecOptions{StreamPrint: false})
 		So(result.Error, ShouldBeNil)
 		So(result.FullCommand, ShouldNotBeEmpty)
 		So(result.File, ShouldNotBeEmpty)
@@ -39,7 +39,7 @@ func TestDump(t *testing.T) {
 		dump.IgnoreTableData = append(dump.IgnoreTableData, "public.test_1")
 		So(dump.IgnoreTableDataToString(), ShouldNotBeEmpty)
 		dump.IgnoreTableData = append(dump.IgnoreTableData, "public.test_1")
-		result := dump.Exec()
+		result := dump.Exec(pg.ExecOptions{StreamPrint: false})
 		So(result.Error, ShouldBeNil)
 		So(result.FullCommand, ShouldNotBeEmpty)
 		So(result.File, ShouldNotBeEmpty)
@@ -49,7 +49,7 @@ func TestDump(t *testing.T) {
 		dump := pg.NewDump(fixtures.Setup())
 		dump.EnableVerbose()
 		dump.SetupFormat("t")
-		result := dump.Exec()
+		result := dump.Exec(pg.ExecOptions{StreamPrint: true})
 		So(result.Error, ShouldBeNil)
 		So(result.FullCommand, ShouldNotBeEmpty)
 		So(result.File, ShouldNotBeEmpty)
@@ -57,7 +57,7 @@ func TestDump(t *testing.T) {
 	})
 	Convey("Create failed dump", t, func() {
 		dump := pg.NewDump(&pg.Postgres{})
-		result := dump.Exec()
+		result := dump.Exec(pg.ExecOptions{StreamPrint: false})
 		So(result.Error, ShouldNotBeNil)
 	})
 }
