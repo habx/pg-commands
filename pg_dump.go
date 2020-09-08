@@ -28,7 +28,7 @@ type Dump struct {
 	// e.g []string{"--inserts"}
 	Options []string
 
-	IgnoreTables []string
+	IgnoreTableData []string
 }
 
 func NewDump(pg *Postgres) *Dump {
@@ -86,18 +86,18 @@ func (x *Dump) dumpOptions() []string {
 	if x.Verbose {
 		options = append(options, "-v")
 	}
-	if len(x.IgnoreTables) > 0 {
-		options = append(options, x.IgnoreTableToString())
+	if len(x.IgnoreTableData) > 0 {
+		options = append(options, x.IgnoreTableDataToString())
 	}
 	return options
 }
-func (x *Dump) IgnoreTableToString() string {
+func (x *Dump) IgnoreTableDataToString() string {
 	var t string
-	for i, tables := range x.IgnoreTables {
-		if i == len(x.IgnoreTables)-1 {
-			t += "--exclude-table=" + tables
+	for i, tables := range x.IgnoreTableData {
+		if i == len(x.IgnoreTableData)-1 {
+			t += "--exclude-table-data=" + tables
 		} else {
-			t += "--exclude-table=" + tables + " "
+			t += "--exclude-table-data=" + tables + " "
 		}
 	}
 	return t
