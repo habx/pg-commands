@@ -24,7 +24,7 @@ dump := pg.NewDump(&pg.Postgres{
     Username: "example",
     Password: "example",
 })
-dumpExec := dump.Exec()
+dumpExec := dump.Exec(pg.ExecOptions{StreamPrint: false})
 if dumpExec.Error != nil {
     fmt.Println(dumpExec.Error.Err)
     fmt.Println(dumpExec.Output)
@@ -41,7 +41,7 @@ restore := pg.NewRestore(&pg.Postgres{
     Username: "example",
     Password: "example",
 })
-restoreExec := restore.Exec(dumpExec.File)
+restoreExec := restore.Exec(dumpExec.File, pg.ExecOptions{StreamPrint: false})
 if restoreExec.Error != nil {
     fmt.Println(restoreExec.Error.Err)
     fmt.Println(restoreExec.Output)

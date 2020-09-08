@@ -36,24 +36,24 @@ func NewDump(pg *Postgres) *Dump {
 }
 
 // Exec `pg_dump` of the specified database, and creates a gzip compressed tarball archive.
-func (x *Dump) Exec() Result {
+func (x *Dump) Exec(opts ExecOptions) Result {
 	result := Result{Mine: "application/x-tar"}
 	result.File = x.newFileName()
-	options := append(x.dumpOptions(), fmt.Sprintf(`-f%s%v`, x.Path,result.File))
+	options := append(x.dumpOptions(), fmt.Sprintf(`-f%s%v`, x.Path, result.File))
 	result.FullCommand = strings.Join(options, " ")
 	cmd := exec.Command(PGDumpCmd, options...)
 	cmd.Env = append(os.Environ(), x.EnvPassword)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		result.Error = &ResultError{Err: err, CmdOutput: string(out)}
-		if exitError, ok := err.(*exec.ExitError); ok {
-			result.Error.ExitCode = exitError.ExitCode()
-		}
+	stderrIn, _ := cmd.StderrPipe()
+	go func() {
+		result.Output = streamExecOutput(stderrIn, opts)
+	}()
+	cmd.Start()
+	err := cmd.Wait()
+	if exitError, ok := err.(*exec.ExitError); ok {
+		result.Error = &ResultError{Err: err, ExitCode: exitError.ExitCode(), CmdOutput: result.Output}
 	}
-	result.Output = string(out)
 	return result
 }
-
 func (x *Dump) ResetOptions() {
 	x.Options = []string{}
 }
