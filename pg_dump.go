@@ -87,18 +87,14 @@ func (x *Dump) dumpOptions() []string {
 		options = append(options, "-v")
 	}
 	if len(x.IgnoreTableData) > 0 {
-		options = append(options, x.IgnoreTableDataToString())
+		options = append(options, x.IgnoreTableDataToString()...)
 	}
 	return options
 }
-func (x *Dump) IgnoreTableDataToString() string {
-	var t string
-	for i, tables := range x.IgnoreTableData {
-		if i == len(x.IgnoreTableData)-1 {
-			t += "--exclude-table-data=" + tables
-		} else {
-			t += "--exclude-table-data=" + tables + " "
-		}
+func (x *Dump) IgnoreTableDataToString() []string {
+	var t []string
+	for _, tables := range x.IgnoreTableData {
+		t = append(t, "--exclude-table-data=" + tables)
 	}
 	return t
 }
