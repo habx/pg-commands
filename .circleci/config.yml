@@ -82,9 +82,11 @@ jobs:
           command: |
             go run tests/fixtures/scripts/install-deps/install-deps.go
             go run tests/fixtures/scripts/init-database/init-database.go
-            go test -v $(go list ./... | grep -v "vendor") -cover -p=1 -coverprofile=c.out
-            go tool cover -html=c.out -o coverage.html
+            sleep 5
+            go test -v $(go list ./... | grep -v "vendor") -covermode=atomic -coverprofile=coverage.txt
+            go tool cover -html=coverage.txt -o coverage.html
             mv coverage.html /tmp/artifacts
+            bash <(curl -s https://codecov.io/bash)
           environment:
             HABX_ENV: test
             TEST_DB_HOST: postgres
