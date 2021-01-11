@@ -1,5 +1,6 @@
 # pg-commands
 
+[![codecov](https://codecov.io/gh/habx/pg-commands/branch/dev/graph/badge.svg?token=YTMXFOJDCZ)](https://codecov.io/gh/habx/pg-commands)
 [![Release](https://img.shields.io/github/v/release/habx/pg-commands)](https://github.com/habx/pg-commands/releases/latest)
 [![Go version](https://img.shields.io/github/go-mod/go-version/habx/pg-commands/dev)](https://golang.org/doc/devel/release.html)
 [![CircleCI](https://img.shields.io/circleci/build/github/habx/pg-commands/dev)](https://app.circleci.com/pipelines/github/habx/pg-commands)
