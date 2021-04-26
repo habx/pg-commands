@@ -10,7 +10,7 @@ import (
 var (
 	// PGRestoreCmd is the path to the `pg_restore` executable
 	PGRestoreCmd      = "pg_restore"
-	PGDRestoreStdOpts = []string{"--no-owner", "--no-acl", "--clean", "--schema=public", "--exit-on-error"}
+	PGDRestoreStdOpts = []string{"--no-owner", "--no-acl", "--clean", "--exit-on-error"}
 )
 
 type Restore struct {
@@ -24,10 +24,12 @@ type Restore struct {
 	// Extra pg_dump options
 	// e.g []string{"--inserts"}
 	Options []string
+	// Schemas: list of database schema
+	Schemas []string
 }
 
 func NewRestore(pg *Postgres) *Restore {
-	return &Restore{Options: PGDRestoreStdOpts, Postgres: pg}
+	return &Restore{Options: PGDRestoreStdOpts, Postgres: pg, Schemas: []string{"public"}}
 }
 
 // Exec `pg_restore` of the specified database, and restore from a gzip compressed tarball archive.
@@ -62,6 +64,10 @@ func (x *Restore) SetPath(path string) {
 	x.Path = path
 }
 
+func (x *Restore) SetSchemas(schemas []string) {
+	x.Schemas = schemas
+}
+
 func (x *Restore) restoreOptions() []string {
 	options := x.Options
 	options = append(options, x.Postgres.Parse()...)
@@ -75,5 +81,9 @@ func (x *Restore) restoreOptions() []string {
 	if x.Verbose {
 		options = append(options, "-v")
 	}
+	for _, schema := range x.Schemas {
+		options = append(options, "--schema=" + schema)
+	}
+
 	return options
 }
