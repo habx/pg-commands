@@ -3,7 +3,7 @@ module github.com/habx/pg-commands
 go 1.15
 
 require (
-	github.com/go-pg/pg v8.0.7+incompatible
+	github.com/go-pg/pg/v10 v10.10.4
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-cmp v0.5.5 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
