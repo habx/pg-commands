@@ -1,6 +1,7 @@
 package pg_commands_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/habx/pg-commands/tests/fixtures"
@@ -25,19 +26,41 @@ func TestNewRestore(t *testing.T) {
 }
 
 func TestRestore(t *testing.T) {
-	dump := pg.NewDump(fixtures.Setup())
+	pgSetup := fixtures.Setup()
+	dump := pg.NewDump(pgSetup)
 	result := dump.Exec(pg.ExecOptions{StreamPrint: false})
 	Convey("Create standard restore", t, func() {
 		restore := pg.NewRestore(fixtures.Setup())
 		x := restore.Exec(result.File, pg.ExecOptions{StreamPrint: true})
 		So(x.Error, ShouldBeNil)
 		So(x.FullCommand, ShouldNotBeEmpty)
-
+		fmt.Println(x.FullCommand)
+		So(x.FullCommand, ShouldEqual, fmt.Sprintf(
+			"--no-owner --no-acl --clean --exit-on-error --dbname=%s --host=%s --port=%d --username=%s %s--schema=public %s",
+			pgSetup.DB,
+			pgSetup.Host,
+			pgSetup.Port,
+			pgSetup.Username,
+			func() string {
+				if restore.Role != "" {
+					return fmt.Sprintf("--role=%s ", restore.Role)
+				}
+				return ""
+			}(),
+			result.File))
 		restore.EnableVerbose()
 		restore.Role = "dev_example"
 		x = restore.Exec(result.File, pg.ExecOptions{StreamPrint: false})
 		So(x.Error, ShouldBeNil)
 		So(x.FullCommand, ShouldNotBeEmpty)
+		So(x.FullCommand, ShouldEqual, fmt.Sprintf(
+			"--no-owner --no-acl --clean --exit-on-error --dbname=%s --host=%s --port=%d --username=%s --role=%s -v --schema=public %s",
+			pgSetup.DB,
+			pgSetup.Host,
+			pgSetup.Port,
+			pgSetup.Username,
+			restore.Role,
+			result.File))
 	})
 	Convey("Create failed restore", t, func() {
 		restore := pg.NewRestore(&pg.Postgres{})
