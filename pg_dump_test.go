@@ -27,6 +27,7 @@ func TestNewDump(t *testing.T) {
 func TestDump(t *testing.T) {
 	Convey("Create standard dump", t, func() {
 		dump := pg.NewDump(fixtures.Setup())
+		dump.SetFileName("test-dump.sql.tar.gz")
 		result := dump.Exec(pg.ExecOptions{StreamPrint: false})
 		So(result.Error, ShouldBeNil)
 		So(result.FullCommand, ShouldNotBeEmpty)
