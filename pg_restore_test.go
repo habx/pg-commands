@@ -13,6 +13,8 @@ import (
 func TestNewRestore(t *testing.T) {
 	restore := pg.NewRestore(fixtures.Setup())
 	Convey("Create new restore", t, func() {
+		restore.SetPath("./")
+		restore.SetSchemas([]string{"public"})
 		So(restore.Options, ShouldNotBeEmpty)
 		So(restore.Verbose, ShouldBeFalse)
 		Convey("Public funcs", func() {
