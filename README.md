@@ -5,6 +5,7 @@
 [![Go version](https://img.shields.io/github/go-mod/go-version/habx/pg-commands/dev)](https://golang.org/doc/devel/release.html)
 [![CircleCI](https://img.shields.io/circleci/build/github/habx/pg-commands/dev)](https://app.circleci.com/pipelines/github/habx/pg-commands)
 [![License](https://img.shields.io/github/license/habx/pg-commands)](/LICENSE)
+[![Go Reference](https://pkg.go.dev/badge/github.com/habx/pg-commands.svg)](https://pkg.go.dev/github.com/habx/pg-commands)
 
 ## install
 
