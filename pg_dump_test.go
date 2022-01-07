@@ -67,6 +67,7 @@ func TestDump(t *testing.T) {
 		dump := pg.NewDump(pgSetup)
 		dump.EnableVerbose()
 		dump.SetupFormat("t")
+		dump.SetPath("./")
 		result := dump.Exec(pg.ExecOptions{StreamPrint: true})
 		So(result.Error, ShouldBeNil)
 		So(result.FullCommand, ShouldNotBeEmpty)
