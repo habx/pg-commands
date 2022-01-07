@@ -75,6 +75,7 @@ func (x *Restore) restoreOptions() []string {
 	if x.Role != "" {
 		options = append(options, fmt.Sprintf(`--role=%v`, x.Role))
 	} else if x.DB != "" {
+		x.Role = x.DB
 		options = append(options, fmt.Sprintf(`--role=%v`, x.DB))
 	}
 
@@ -82,7 +83,7 @@ func (x *Restore) restoreOptions() []string {
 		options = append(options, "-v")
 	}
 	for _, schema := range x.Schemas {
-		options = append(options, "--schema=" + schema)
+		options = append(options, "--schema="+schema)
 	}
 
 	return options
