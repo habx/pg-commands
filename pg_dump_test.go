@@ -1,6 +1,7 @@
 package pg_commands_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/habx/pg-commands/tests/fixtures"
@@ -26,16 +27,25 @@ func TestNewDump(t *testing.T) {
 
 func TestDump(t *testing.T) {
 	Convey("Create standard dump", t, func() {
-		dump := pg.NewDump(fixtures.Setup())
+		pgSetup := fixtures.Setup()
+		dump := pg.NewDump(pgSetup)
 		dump.SetFileName("test-dump.sql.tar.gz")
 		result := dump.Exec(pg.ExecOptions{StreamPrint: false})
 		So(result.Error, ShouldBeNil)
 		So(result.FullCommand, ShouldNotBeEmpty)
 		So(result.File, ShouldNotBeEmpty)
 		So(result.Mine, ShouldEqual, "application/x-tar")
+		So(result.FullCommand, ShouldEqual, fmt.Sprintf(
+			"--no-owner --no-acl --clean --blob --dbname=%s --host=%s --port=%d --username=%s -Fc -f%s",
+			pgSetup.DB,
+			pgSetup.Host,
+			pgSetup.Port,
+			pgSetup.Username,
+			result.File))
 	})
 	Convey("Create dump with ignore table", t, func() {
-		dump := pg.NewDump(fixtures.Setup())
+		pgSetup := fixtures.Setup()
+		dump := pg.NewDump(pgSetup)
 		So(dump.IgnoreTableDataToString(), ShouldBeEmpty)
 		dump.IgnoreTableData = append(dump.IgnoreTableData, "public.test_1")
 		So(dump.IgnoreTableDataToString(), ShouldNotBeEmpty)
@@ -45,20 +55,37 @@ func TestDump(t *testing.T) {
 		So(result.FullCommand, ShouldNotBeEmpty)
 		So(result.File, ShouldNotBeEmpty)
 		So(result.Mine, ShouldEqual, "application/x-tar")
+		So(result.FullCommand, ShouldEqual, fmt.Sprintf(
+			"--no-owner --no-acl --clean --blob --dbname=%s --host=%s --port=%d --username=%s -Fc --exclude-table-data=public.test_1 --exclude-table-data=public.test_1 -f%s",
+			pgSetup.DB,
+			pgSetup.Host,
+			pgSetup.Port,
+			pgSetup.Username,
+			result.File))
 	})
 	Convey("Create dump with log and custom format", t, func() {
-		dump := pg.NewDump(fixtures.Setup())
+		pgSetup := fixtures.Setup()
+		dump := pg.NewDump(pgSetup)
 		dump.EnableVerbose()
 		dump.SetupFormat("t")
+		dump.SetPath("./")
 		result := dump.Exec(pg.ExecOptions{StreamPrint: true})
 		So(result.Error, ShouldBeNil)
 		So(result.FullCommand, ShouldNotBeEmpty)
 		So(result.File, ShouldNotBeEmpty)
 		So(result.Mine, ShouldEqual, "application/x-tar")
+		So(result.FullCommand, ShouldEqual, fmt.Sprintf(
+			"--no-owner --no-acl --clean --blob --dbname=%s --host=%s --port=%d --username=%s -Ft -v -f%s",
+			pgSetup.DB,
+			pgSetup.Host,
+			pgSetup.Port,
+			pgSetup.Username,
+			dump.Path+result.File))
 	})
 	Convey("Create failed dump", t, func() {
 		dump := pg.NewDump(&pg.Postgres{})
 		result := dump.Exec(pg.ExecOptions{StreamPrint: false})
 		So(result.Error, ShouldNotBeNil)
+		So(result.FullCommand, ShouldEqual, fmt.Sprintf("--no-owner --no-acl --clean --blob -Fc -f%s", result.File))
 	})
 }
