@@ -29,6 +29,9 @@ type Dump struct {
 	Options []string
 
 	IgnoreTableData []string
+
+	// fileName: output file name
+	fileName string
 }
 
 func NewDump(pg *Postgres) *Dump {
@@ -38,7 +41,7 @@ func NewDump(pg *Postgres) *Dump {
 // Exec `pg_dump` of the specified database, and creates a gzip compressed tarball archive.
 func (x *Dump) Exec(opts ExecOptions) Result {
 	result := Result{Mine: "application/x-tar"}
-	result.File = x.newFileName()
+	result.File = x.GetFileName()
 	options := append(x.dumpOptions(), fmt.Sprintf(`-f%s%v`, x.Path, result.File))
 	result.FullCommand = strings.Join(options, " ")
 	cmd := exec.Command(PGDumpCmd, options...)
@@ -60,6 +63,18 @@ func (x *Dump) ResetOptions() {
 
 func (x *Dump) EnableVerbose() {
 	x.Verbose = true
+}
+
+func (x *Dump) SetFileName(filename string) {
+	x.fileName = filename
+}
+
+func (x *Dump) GetFileName() string {
+	if x.fileName == "" {
+		// Use default file name
+		x.fileName = x.newFileName()
+	}
+	return x.fileName
 }
 
 func (x *Dump) SetupFormat(f string) {
@@ -94,7 +109,7 @@ func (x *Dump) dumpOptions() []string {
 func (x *Dump) IgnoreTableDataToString() []string {
 	var t []string
 	for _, tables := range x.IgnoreTableData {
-		t = append(t, "--exclude-table-data=" + tables)
+		t = append(t, "--exclude-table-data="+tables)
 	}
 	return t
 }
