@@ -7,6 +7,9 @@
     "rangeStrategy": "bump",
     "enabledManagers": ["gomod", "dockerfile"],
     "labels": [ "dependencies" ],
+    "schedule": [
+      "before 6:00am on Monday"
+    ],
     "packageRules": [
       {
         "updateTypes": ["patch", "pin", "digest"],
