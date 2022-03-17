@@ -5,7 +5,7 @@
     ],
     "masterIssue": true,
     "rangeStrategy": "bump",
-    "enabledManagers": ["gomod", "dockerfile"],
+    "enabledManagers": ["gomod", "dockerfile", "circleci"],
     "labels": [ "dependencies" ],
     "schedule": [
       "before 6:00am on Monday"
