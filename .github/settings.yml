@@ -1,4 +1,4 @@
 # https://github.com/habx/devops-repo-shared-configs/blob/dev/github-settings/go-lib.yml
 # 2022-03-21
-# last_update: 2022-06-08
+# last_update: 2022-06-21
 _extends: devops-repo-shared-configs:github-settings/go-lib.yml
