@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/go-pg/pg v8.0.7+incompatible
+	github.com/go-pg/pg/v10 v10.10.6
 	github.com/smartystreets/goconvey v1.7.2
 )
 
