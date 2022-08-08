@@ -1,29 +1,6 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-      "config:base"
-    ],
-    "masterIssue": true,
-    "rangeStrategy": "bump",
-    "enabledManagers": ["gomod", "dockerfile", "circleci"],
-    "labels": [ "dependencies" ],
-    "schedule": [
-      "before 6:00am on Monday"
-    ],
-    "packageRules": [
-      {
-        "updateTypes": ["patch", "pin", "digest"],
-        "automerge": true,
-        "addLabels": ["automerge-noupdate"]
-      },
-      {
-        "updateTypes": ["major", "minor"],
-        "matchPackagePatterns": [
-          "^github.com/habx/"
-        ],
-        "automerge": true,
-        "addLabels": ["automerge-noupdate"]
-      }
-    ]
-  }
-  
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>habx/devops-repo-shared-configs//renovate/go-lib"
+  ]
+}
