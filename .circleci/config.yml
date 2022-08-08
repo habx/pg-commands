@@ -6,11 +6,11 @@ alias:
   # - Docker configuration - #
   - &docker_golang_configuration
     docker:
-      - image: cimg/golang:1.19
+      - image: cimg/go:1.19
         user: root
   - &docker_golang_with_postgres_configuration
     docker:
-      - image: cimg/golang:1.19
+      - image: cimg/go:1.19
         user: root
       - image: habx/postgres
         name: postgres
