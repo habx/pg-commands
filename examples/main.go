@@ -2,17 +2,21 @@ package main
 
 import (
 	"fmt"
+
 	pg "github.com/habx/pg-commands"
 )
 
 func main() {
-	dump := pg.NewDump(&pg.Postgres{
+	dump, err := pg.NewDump(&pg.Postgres{
 		Host:     "localhost",
 		Port:     5432,
 		DB:       "dev_example",
 		Username: "example",
 		Password: "example",
 	})
+	if err != nil {
+		panic(err)
+	}
 	dumpExec := dump.Exec(pg.ExecOptions{StreamPrint: false})
 	if dumpExec.Error != nil {
 		fmt.Println(dumpExec.Error.Err)
@@ -23,13 +27,16 @@ func main() {
 		fmt.Println(dumpExec.Output)
 	}
 
-	restore := pg.NewRestore(&pg.Postgres{
+	restore, err := pg.NewRestore(&pg.Postgres{
 		Host:     "localhost",
 		Port:     5432,
 		DB:       "dev_example",
 		Username: "example",
 		Password: "example",
 	})
+	if err != nil {
+		panic(err)
+	}
 	restoreExec := restore.Exec(dumpExec.File, pg.ExecOptions{StreamPrint: false})
 	if restoreExec.Error != nil {
 		fmt.Println(restoreExec.Error.Err)

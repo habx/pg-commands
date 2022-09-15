@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os/exec"
 )
 
 type ExecOptions struct {
@@ -23,4 +24,8 @@ func streamExecOutput(out io.ReadCloser, options ExecOptions) string {
 		output += line
 	}
 	return output
+}
+func CommandExist(command string) bool {
+	_, err := exec.LookPath(command)
+	return err == nil
 }

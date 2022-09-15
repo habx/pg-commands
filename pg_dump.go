@@ -34,8 +34,11 @@ type Dump struct {
 	fileName string
 }
 
-func NewDump(pg *Postgres) *Dump {
-	return &Dump{Options: PGDumpStdOpts, Postgres: pg}
+func NewDump(pg *Postgres) (*Dump, error) {
+	if !CommandExist(PGDumpCmd) {
+		return nil, fmt.Errorf("pg_dump command not found")
+	}
+	return &Dump{Options: PGDumpStdOpts, Postgres: pg}, nil
 }
 
 // Exec `pg_dump` of the specified database, and creates a gzip compressed tarball archive.

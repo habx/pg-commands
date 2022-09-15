@@ -11,9 +11,21 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+func TestNewDumpWrongCommand(t *testing.T) {
+	savePGDumpCmd := pg.PGDumpCmd
+	pg.PGDumpCmd = "xxxx"
+	Convey("Create new dump with wrong command", t, func() {
+		dump, err := pg.NewDump(fixtures.Setup())
+		So(err, ShouldNotBeNil)
+		So(dump, ShouldBeNil)
+	})
+	pg.PGDumpCmd = savePGDumpCmd
+}
+
 func TestNewDump(t *testing.T) {
-	dump := pg.NewDump(fixtures.Setup())
+	dump, err := pg.NewDump(fixtures.Setup())
 	Convey("Create new dump", t, func() {
+		So(err, ShouldBeNil)
 		So(dump.Options, ShouldNotBeEmpty)
 		So(dump.Verbose, ShouldBeFalse)
 		Convey("Public funcs", func() {
@@ -28,7 +40,8 @@ func TestNewDump(t *testing.T) {
 func TestDump(t *testing.T) {
 	Convey("Create standard dump", t, func() {
 		pgSetup := fixtures.Setup()
-		dump := pg.NewDump(pgSetup)
+		dump, err := pg.NewDump(pgSetup)
+		So(err, ShouldBeNil)
 		dump.SetFileName("test-dump.sql.tar.gz")
 		result := dump.Exec(pg.ExecOptions{StreamPrint: false})
 		So(result.Error, ShouldBeNil)
@@ -45,7 +58,8 @@ func TestDump(t *testing.T) {
 	})
 	Convey("Create dump with ignore table", t, func() {
 		pgSetup := fixtures.Setup()
-		dump := pg.NewDump(pgSetup)
+		dump, err := pg.NewDump(pgSetup)
+		So(err, ShouldBeNil)
 		So(dump.IgnoreTableDataToString(), ShouldBeEmpty)
 		dump.IgnoreTableData = append(dump.IgnoreTableData, "public.test_1")
 		So(dump.IgnoreTableDataToString(), ShouldNotBeEmpty)
@@ -65,7 +79,8 @@ func TestDump(t *testing.T) {
 	})
 	Convey("Create dump with log and custom format", t, func() {
 		pgSetup := fixtures.Setup()
-		dump := pg.NewDump(pgSetup)
+		dump, err := pg.NewDump(pgSetup)
+		So(err, ShouldBeNil)
 		dump.EnableVerbose()
 		dump.SetupFormat("t")
 		dump.SetPath("./")
@@ -83,7 +98,8 @@ func TestDump(t *testing.T) {
 			dump.Path+result.File))
 	})
 	Convey("Create failed dump", t, func() {
-		dump := pg.NewDump(&pg.Postgres{})
+		dump, err := pg.NewDump(&pg.Postgres{})
+		So(err, ShouldBeNil)
 		result := dump.Exec(pg.ExecOptions{StreamPrint: false})
 		So(result.Error, ShouldNotBeNil)
 		So(result.FullCommand, ShouldEqual, fmt.Sprintf("--no-owner --no-acl --clean --blob -Fc -f%s", result.File))

@@ -28,8 +28,11 @@ type Restore struct {
 	Schemas []string
 }
 
-func NewRestore(pg *Postgres) *Restore {
-	return &Restore{Options: PGDRestoreStdOpts, Postgres: pg, Schemas: []string{"public"}}
+func NewRestore(pg *Postgres) (*Restore, error) {
+	if !CommandExist(PGRestoreCmd) {
+		return nil, fmt.Errorf("pg_restore command not found")
+	}
+	return &Restore{Options: PGDRestoreStdOpts, Postgres: pg, Schemas: []string{"public"}}, nil
 }
 
 // Exec `pg_restore` of the specified database, and restore from a gzip compressed tarball archive.
