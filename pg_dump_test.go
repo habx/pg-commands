@@ -1,15 +1,25 @@
-package pg_commands_test
+package pgcommands_test
 
 import (
 	"fmt"
+	"runtime"
 	"testing"
 
 	"github.com/habx/pg-commands/tests/fixtures"
+	initdatabase "github.com/habx/pg-commands/tests/fixtures/scripts/init-database"
+	deps "github.com/habx/pg-commands/tests/fixtures/scripts/install-deps"
 
 	pg "github.com/habx/pg-commands"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+func init() {
+	initdatabase.Init()
+	if runtime.GOOS == "linux" {
+		deps.InstallCommands()
+	}
+}
 
 func TestNewDump(t *testing.T) {
 	dump := pg.NewDump(fixtures.Setup())
@@ -22,6 +32,14 @@ func TestNewDump(t *testing.T) {
 			dump.EnableVerbose()
 			So(dump.Verbose, ShouldBeTrue)
 		})
+	})
+	Convey("Create without binary", t, func() {
+		savePGDumpCmd := pg.PGDumpCmd
+		pg.PGDumpCmd = ""
+		dump.ResetOptions()
+		dumpBad := dump.Exec(pg.ExecOptions{StreamPrint: false})
+		So(dumpBad.Error, ShouldNotBeNil)
+		pg.PGDumpCmd = savePGDumpCmd
 	})
 }
 

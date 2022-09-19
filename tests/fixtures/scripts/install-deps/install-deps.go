@@ -1,4 +1,4 @@
-package main
+package deps
 
 import (
 	"fmt"
@@ -6,14 +6,14 @@ import (
 )
 
 var commands = []string{
-	"apt-get install -y lsb-release",
-	"echo \"deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main\" > /etc/apt/sources.list.d/pgdg.list",
+	"sudo apt-get install -y lsb-release",
+	"sudo echo \"deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main\" | sudo tee -a /etc/apt/sources.list.d/pgdg.list",
 	"wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -",
-	"apt-get -y update",
-	"apt-get install -y postgresql-client",
+	"sudo apt-get -y update",
+	"sudo apt-get install -y postgresql-client",
 }
 
-func main() {
+func InstallCommands() {
 	for _, command := range commands {
 		Command(command)
 	}

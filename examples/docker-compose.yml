@@ -1,7 +1,7 @@
 version: "3"
 services:
   example:
-    image: habx/postgres
+    image: postgres:13
     environment:
       POSTGRES_USER: example
       POSTGRES_PASSWORD: example
