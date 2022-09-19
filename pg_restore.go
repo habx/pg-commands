@@ -30,7 +30,7 @@ type Restore struct {
 
 func NewRestore(pg *Postgres) (*Restore, error) {
 	if !CommandExist(PGRestoreCmd) {
-		return nil, fmt.Errorf("pg_restore command not found")
+		return nil, &ErrCommandNotFound{Command: PGRestoreCmd}
 	}
 	return &Restore{Options: pgDRestoreStdOpts, Postgres: pg, Schemas: []string{"public"}}, nil
 }

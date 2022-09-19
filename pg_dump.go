@@ -36,7 +36,7 @@ type Dump struct {
 
 func NewDump(pg *Postgres) (*Dump, error) {
 	if !CommandExist(PGDumpCmd) {
-		return nil, fmt.Errorf("pg_dump command not found")
+		return nil, &ErrCommandNotFound{Command: PGDumpCmd}
 	}
 	return &Dump{Options: pgDumpStdOpts, Postgres: pg}, nil
 }
