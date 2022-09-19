@@ -29,5 +29,6 @@ func streamExecOutput(out io.ReadCloser, options ExecOptions) string {
 }
 func CommandExist(command string) bool {
 	_, err := exec.LookPath(command)
+
 	return err == nil
 }

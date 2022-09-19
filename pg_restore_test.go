@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/habx/pg-commands/tests/fixtures"
+	. "github.com/smartystreets/goconvey/convey"
 
 	pg "github.com/habx/pg-commands"
-
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/habx/pg-commands/tests/fixtures"
 )
 
 func TestNewRestoreWrongCommand(t *testing.T) {
@@ -67,6 +66,7 @@ func TestRestore(t *testing.T) {
 				if restore.Role != "" {
 					return fmt.Sprintf("--role=%s ", restore.Role)
 				}
+
 				return ""
 			}(),
 			result.File))

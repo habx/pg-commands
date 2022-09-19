@@ -5,15 +5,15 @@ import (
 	"runtime"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
+	pg "github.com/habx/pg-commands"
 	"github.com/habx/pg-commands/tests/fixtures"
 	initdatabase "github.com/habx/pg-commands/tests/fixtures/scripts/init-database"
 	deps "github.com/habx/pg-commands/tests/fixtures/scripts/install-deps"
-
-	pg "github.com/habx/pg-commands"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
+// nolint: gochecknoinits
 func init() {
 	initdatabase.Init()
 	if runtime.GOOS == "linux" {

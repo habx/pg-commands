@@ -3,9 +3,9 @@ package pgcommands_test
 import (
 	"testing"
 
-	pg "github.com/habx/pg-commands"
-
 	. "github.com/smartystreets/goconvey/convey"
+
+	pg "github.com/habx/pg-commands"
 )
 
 func CommandExistTest(t *testing.T) {

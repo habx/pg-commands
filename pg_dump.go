@@ -38,6 +38,7 @@ func NewDump(pg *Postgres) (*Dump, error) {
 	if !CommandExist(PGDumpCmd) {
 		return nil, &ErrCommandNotFound{Command: PGDumpCmd}
 	}
+
 	return &Dump{Options: pgDumpStdOpts, Postgres: pg}, nil
 }
 

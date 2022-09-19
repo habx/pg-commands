@@ -32,6 +32,7 @@ func NewRestore(pg *Postgres) (*Restore, error) {
 	if !CommandExist(PGRestoreCmd) {
 		return nil, &ErrCommandNotFound{Command: PGRestoreCmd}
 	}
+
 	return &Restore{Options: pgDRestoreStdOpts, Postgres: pg, Schemas: []string{"public"}}, nil
 }
 
