@@ -1,4 +1,4 @@
-package pg_commands
+package pgcommands
 
 import (
 	"fmt"
@@ -11,8 +11,8 @@ import (
 var (
 	// PGDumpCmd is the path to the `pg_dump` executable
 	PGDumpCmd           = "pg_dump"
-	PGDumpStdOpts       = []string{"--no-owner", "--no-acl", "--clean", "--blob"}
-	PGDumpDefaultFormat = "c"
+	pgDumpStdOpts       = []string{"--no-owner", "--no-acl", "--clean", "--blob"}
+	pgDumpDefaultFormat = "c"
 )
 
 // Dump is an `Exporter` interface that backs up a Postgres database via the `pg_dump` command.
@@ -35,7 +35,7 @@ type Dump struct {
 }
 
 func NewDump(pg *Postgres) *Dump {
-	return &Dump{Options: PGDumpStdOpts, Postgres: pg}
+	return &Dump{Options: pgDumpStdOpts, Postgres: pg}
 }
 
 // Exec `pg_dump` of the specified database, and creates a gzip compressed tarball archive.
@@ -50,11 +50,15 @@ func (x *Dump) Exec(opts ExecOptions) Result {
 	go func() {
 		result.Output = streamExecOutput(stderrIn, opts)
 	}()
-	cmd.Start()
-	err := cmd.Wait()
+	err := cmd.Start()
+	if err != nil {
+		result.Error = &ResultError{Err: err, CmdOutput: result.Output}
+	}
+	err = cmd.Wait()
 	if exitError, ok := err.(*exec.ExitError); ok {
 		result.Error = &ResultError{Err: err, ExitCode: exitError.ExitCode(), CmdOutput: result.Output}
 	}
+
 	return result
 }
 func (x *Dump) ResetOptions() {
@@ -74,6 +78,7 @@ func (x *Dump) GetFileName() string {
 		// Use default file name
 		x.fileName = x.newFileName()
 	}
+
 	return x.fileName
 }
 
@@ -96,7 +101,7 @@ func (x *Dump) dumpOptions() []string {
 	if x.Format != nil {
 		options = append(options, fmt.Sprintf(`-F%v`, *x.Format))
 	} else {
-		options = append(options, fmt.Sprintf(`-F%v`, PGDumpDefaultFormat))
+		options = append(options, fmt.Sprintf(`-F%v`, pgDumpDefaultFormat))
 	}
 	if x.Verbose {
 		options = append(options, "-v")
@@ -104,12 +109,14 @@ func (x *Dump) dumpOptions() []string {
 	if len(x.IgnoreTableData) > 0 {
 		options = append(options, x.IgnoreTableDataToString()...)
 	}
+
 	return options
 }
 func (x *Dump) IgnoreTableDataToString() []string {
-	var t []string
+	t := []string{}
 	for _, tables := range x.IgnoreTableData {
 		t = append(t, "--exclude-table-data="+tables)
 	}
+
 	return t
 }

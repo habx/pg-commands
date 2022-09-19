@@ -1,4 +1,4 @@
-package pg_commands_test
+package pgcommands_test
 
 import (
 	"fmt"
@@ -24,6 +24,14 @@ func TestNewRestore(t *testing.T) {
 			restore.EnableVerbose()
 			So(restore.Verbose, ShouldBeTrue)
 		})
+	})
+	Convey("Create without binary", t, func() {
+		savePGRestoreCmd := pg.PGRestoreCmd
+		pg.PGRestoreCmd = ""
+		restore.ResetOptions()
+		restoreBad := restore.Exec("test", pg.ExecOptions{StreamPrint: false})
+		So(restoreBad.Error, ShouldNotBeNil)
+		pg.PGRestoreCmd = savePGRestoreCmd
 	})
 }
 
