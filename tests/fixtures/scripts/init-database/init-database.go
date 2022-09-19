@@ -1,25 +1,25 @@
-package main
+package initdatabase
 
 import (
-	"io/ioutil"
 	"os"
 	"strconv"
 
 	"github.com/go-pg/pg/v10"
+
 	"github.com/habx/pg-commands/tests/fixtures"
 )
 
-func main() {
+func Init() {
 	config := fixtures.Setup()
-	querys, err := ioutil.ReadFile("tests/fixtures/scripts/01_database.sql")
+	querys, err := os.ReadFile("tests/fixtures/scripts/01_database.sql")
 	if err != nil {
 		panic(err)
 	}
 
 	db := pg.Connect(&pg.Options{
-		User:     os.Getenv("POSTGRES_USER"),
-		Password: os.Getenv("POSTGRES_PASSWORD"),
-		Database: os.Getenv("POSTGRES_DB"),
+		User:     config.Username,
+		Password: config.Password,
+		Database: "test-db",
 		Addr:     config.Host + ":" + strconv.Itoa(config.Port),
 	})
 	defer db.Close()

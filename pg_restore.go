@@ -1,4 +1,4 @@
-package pg_commands
+package pgcommands
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 var (
 	// PGRestoreCmd is the path to the `pg_restore` executable
 	PGRestoreCmd      = "pg_restore"
-	PGDRestoreStdOpts = []string{"--no-owner", "--no-acl", "--clean", "--exit-on-error"}
+	pgDRestoreStdOpts = []string{"--no-owner", "--no-acl", "--clean", "--exit-on-error"}
 )
 
 type Restore struct {
@@ -32,7 +32,7 @@ func NewRestore(pg *Postgres) (*Restore, error) {
 	if !CommandExist(PGRestoreCmd) {
 		return nil, fmt.Errorf("pg_restore command not found")
 	}
-	return &Restore{Options: PGDRestoreStdOpts, Postgres: pg, Schemas: []string{"public"}}, nil
+	return &Restore{Options: pgDRestoreStdOpts, Postgres: pg, Schemas: []string{"public"}}, nil
 }
 
 // Exec `pg_restore` of the specified database, and restore from a gzip compressed tarball archive.
@@ -47,11 +47,15 @@ func (x *Restore) Exec(filename string, opts ExecOptions) Result {
 	go func() {
 		result.Output = streamExecOutput(stderrIn, opts)
 	}()
-	cmd.Start()
-	err := cmd.Wait()
+	err := cmd.Start()
+	if err != nil {
+		result.Error = &ResultError{Err: err, CmdOutput: result.Output}
+	}
+	err = cmd.Wait()
 	if exitError, ok := err.(*exec.ExitError); ok {
 		result.Error = &ResultError{Err: err, ExitCode: exitError.ExitCode(), CmdOutput: result.Output}
 	}
+
 	return result
 }
 

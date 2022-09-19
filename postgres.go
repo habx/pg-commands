@@ -1,4 +1,4 @@
-package pg_commands
+package pgcommands
 
 import (
 	"fmt"
@@ -41,5 +41,6 @@ func (x *Postgres) Parse() []string {
 	if x.Password != "" {
 		x.EnvPassword = fmt.Sprintf(`PGPASSWORD=%v`, x.Password)
 	}
+
 	return options
 }

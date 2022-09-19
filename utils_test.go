@@ -1,4 +1,4 @@
-package pg_commands_test
+package pgcommands_test
 
 import (
 	"testing"

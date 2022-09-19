@@ -1,4 +1,4 @@
-package pg_commands
+package pgcommands
 
 import (
 	"bufio"
@@ -18,11 +18,13 @@ func streamExecOutput(out io.ReadCloser, options ExecOptions) string {
 	output += line
 	for err == nil {
 		if options.StreamPrint {
+			//nolint: staticcheck
 			fmt.Printf(line)
 		}
 		line, err = reader.ReadString('\n')
 		output += line
 	}
+
 	return output
 }
 func CommandExist(command string) bool {
