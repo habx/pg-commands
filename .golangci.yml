@@ -1,0 +1,94 @@
+run:
+  # timeout for analysis, e.g. 30s, 5m, default is 1m
+  deadline: 1m
+
+  # default concurrency is a available CPU number
+  concurrency: 4
+
+linters:
+  disable-all: true
+  enable:
+    - asciicheck
+    - bodyclose
+    - deadcode
+    - depguard
+    - dogsled
+    - dupl
+    - errcheck
+    - exhaustive
+    # - exhaustivestruct
+    - exportloopref
+    - gci
+    - gochecknoinits
+    # - gochecknoglobals
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godox
+    - goerr113
+    - gofmt
+    - goimports
+    # - golint --> revive
+    - gomnd
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    # - interfacer --> (deprecated)
+    # - maligned --> govet:fieldalignment
+    - megacheck
+    - misspell
+    - nakedret
+    - nestif
+    - nlreturn
+    - prealloc
+    - nilerr
+    - nolintlint
+    - rowserrcheck
+    # - scopelint --> exportloopref
+    - exportloopref 
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - testpackage
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
+    - whitespace
+    - wrapcheck
+  fast: false
+
+linters-settings:
+  golint:
+    # minimal confidence for issues, default is 0.8
+    min-confidence: 0.0
+  gofmt:
+    # simplify code: gofmt with `-s` option, true by default
+    simplify: true
+  goimports:
+    # put imports beginning with prefix after 3rd-party packages;
+    # it's a comma-separated list of prefixes
+    local-prefixes: github.com/habx/service-webhooks-v2
+
+    sections:
+      - standard
+      - default
+      - prefix(github.com/habx)
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/habx)
+  misspell:
+    # Correct spellings using locale preferences for US or UK.
+    # Default is to use a neutral variety of English.
+    # Setting locale to US will correct the British spelling of 'colour' to 'color'.
+    locale: US
+issues:
+  include:
+    - EXC0012  # EXC0012 revive: Annoying issue about not having a comment. The rare codebase has such comments
+    - EXC0014  # EXC0014 revive: Annoying issue about not having a comment. The rare codebase has such comments
