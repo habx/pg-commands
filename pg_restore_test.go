@@ -4,16 +4,26 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/habx/pg-commands/tests/fixtures"
+	. "github.com/smartystreets/goconvey/convey"
 
 	pg "github.com/habx/pg-commands"
-
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/habx/pg-commands/tests/fixtures"
 )
 
+func TestNewRestoreWrongCommand(t *testing.T) {
+	savePGRestoreCmd := pg.PGRestoreCmd
+	pg.PGRestoreCmd = "xxxx"
+	Convey("Create new dump with wrong command", t, func() {
+		restore, err := pg.NewRestore(fixtures.Setup())
+		So(err, ShouldNotBeNil)
+		So(restore, ShouldBeNil)
+	})
+	pg.PGRestoreCmd = savePGRestoreCmd
+}
 func TestNewRestore(t *testing.T) {
-	restore := pg.NewRestore(fixtures.Setup())
+	restore, err := pg.NewRestore(fixtures.Setup())
 	Convey("Create new restore", t, func() {
+		So(err, ShouldBeNil)
 		restore.SetPath("./")
 		restore.SetSchemas([]string{"public"})
 		So(restore.Options, ShouldNotBeEmpty)
@@ -37,10 +47,11 @@ func TestNewRestore(t *testing.T) {
 
 func TestRestore(t *testing.T) {
 	pgSetup := fixtures.Setup()
-	dump := pg.NewDump(pgSetup)
+	dump, _ := pg.NewDump(pgSetup)
 	result := dump.Exec(pg.ExecOptions{StreamPrint: false})
 	Convey("Create standard restore", t, func() {
-		restore := pg.NewRestore(fixtures.Setup())
+		restore, err := pg.NewRestore(fixtures.Setup())
+		So(err, ShouldBeNil)
 		x := restore.Exec(result.File, pg.ExecOptions{StreamPrint: true})
 		So(x.Error, ShouldBeNil)
 		So(x.FullCommand, ShouldNotBeEmpty)
@@ -55,6 +66,7 @@ func TestRestore(t *testing.T) {
 				if restore.Role != "" {
 					return fmt.Sprintf("--role=%s ", restore.Role)
 				}
+
 				return ""
 			}(),
 			result.File))
@@ -73,7 +85,8 @@ func TestRestore(t *testing.T) {
 			result.File))
 	})
 	Convey("Create failed restore", t, func() {
-		restore := pg.NewRestore(&pg.Postgres{})
+		restore, err := pg.NewRestore(&pg.Postgres{})
+		So(err, ShouldBeNil)
 		result := restore.Exec("ok", pg.ExecOptions{StreamPrint: false})
 		So(result.Error, ShouldNotBeNil)
 	})

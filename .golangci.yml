@@ -45,7 +45,6 @@ linters:
     - nlreturn
     - prealloc
     - nilerr
-    - nolintlint
     - rowserrcheck
     # - scopelint --> exportloopref
     - exportloopref 

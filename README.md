@@ -19,7 +19,7 @@ go get -t github.com/habx/pg-commands
 
 
 ```go
-dump := pg.NewDump(&pg.Postgres{
+dump, _ := pg.NewDump(&pg.Postgres{
     Host:     "localhost",
     Port:     5432,
     DB:       "dev_example",
@@ -36,7 +36,7 @@ if dumpExec.Error != nil {
     fmt.Println(dumpExec.Output)
 }
 
-restore := pg.NewRestore(&pg.Postgres{
+restore, _ := pg.NewRestore(&pg.Postgres{
     Host:     "localhost",
     Port:     5432,
     DB:       "dev_example",
