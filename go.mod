@@ -3,7 +3,7 @@ module github.com/habx/pg-commands
 go 1.19
 
 require (
-	github.com/go-pg/pg/v10 v10.10.6
+	github.com/go-pg/pg/v10 v10.10.7
 	github.com/smartystreets/goconvey v1.7.2
 )
 
