@@ -21,7 +21,7 @@ alias:
 # --------------------------------------------------- #
 
 orbs:
-  go: habx/golang@0.13.0
+  go: habx/golang@0.14.0
 
 workflows:
   tests:
