@@ -52,7 +52,11 @@ func (x *Dump) Exec(opts ExecOptions) Result {
 	cmd.Env = append(os.Environ(), x.EnvPassword)
 	stderrIn, _ := cmd.StderrPipe()
 	go func() {
-		result.Output = streamExecOutput(stderrIn, opts)
+		output, err := streamExecOutput(stderrIn, opts)
+		if err != nil {
+			result.Error = &ResultError{Err: err, CmdOutput: output}
+		}
+		result.Output = output
 	}()
 	err := cmd.Start()
 	if err != nil {
