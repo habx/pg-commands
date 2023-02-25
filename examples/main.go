@@ -18,13 +18,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	// Old default way, still works
 	//dumpExec := dump.Exec(pg.ExecOptions{StreamPrint: false})
-	//dumpExec := dump.Exec(pg.NewDefaultExecOptions())
-	//dumpExec := dump.Exec(pg.NewStreamToStdout())
-	// Note that any io.Writer could be passed as the second argument to pg.NewCustomExecOptions
-	// For simplicity I'm just using stdout but we could write to a unix fifo file, a database, a RabbitMQ queue or whatever
-	// We could even write to all of the above using io.MultiWriter
-	dumpExec := dump.Exec(pg.NewCustomExecOptions(true, os.Stdout))
+
+	// Note that any io.Writer could be assigned to StreamDestination. For simplicity, I'm just using stdout here.
+	// But we could write to a unix fifo file, a database, a RabbitMQ queue or whatever
+	// We could even write to all of the above using io.MultiWriter(...)
+	dumpExec := dump.Exec(pg.ExecOptions{StreamPrint: true, StreamDestination: os.Stdout})
 	if dumpExec.Error != nil {
 		fmt.Println(dumpExec.Error.Err)
 		fmt.Println(dumpExec.Output)
