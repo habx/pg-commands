@@ -42,7 +42,6 @@ func (x *Restore) Exec(filename string, opts ExecOptions) Result {
 	options := append(x.restoreOptions(), fmt.Sprintf("%s%s", x.Path, filename))
 	result.FullCommand = strings.Join(options, " ")
 	cmd := exec.Command(PGRestoreCmd, options...)
-
 	cmd.Env = append(os.Environ(), x.EnvPassword)
 	stderrIn, _ := cmd.StderrPipe()
 	go streamOutput(stderrIn, opts, &result)
