@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	pg "github.com/habx/pg-commands"
+	"os"
 )
 
 func main() {
@@ -17,7 +18,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	dumpExec := dump.Exec(pg.ExecOptions{StreamPrint: false})
+	// Old default way, still works
+	//dumpExec := dump.Exec(pg.ExecOptions{StreamPrint: false})
+
+	// Note that any io.Writer could be assigned to StreamDestination. For simplicity, I'm just using stdout here.
+	// But we could write to a unix fifo file, a database, a RabbitMQ queue or whatever
+	// We could even write to all of the above using io.MultiWriter(...)
+	dumpExec := dump.Exec(pg.ExecOptions{StreamPrint: true, StreamDestination: os.Stdout})
 	if dumpExec.Error != nil {
 		fmt.Println(dumpExec.Error.Err)
 		fmt.Println(dumpExec.Output)

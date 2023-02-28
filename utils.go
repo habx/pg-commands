@@ -2,31 +2,48 @@ package pgcommands
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os/exec"
 )
 
 type ExecOptions struct {
-	StreamPrint bool
+	StreamPrint       bool
+	StreamDestination io.Writer
 }
 
-func streamExecOutput(out io.ReadCloser, options ExecOptions) string {
+func streamExecOutput(out io.ReadCloser, options ExecOptions) (string, error) {
 	output := ""
 	reader := bufio.NewReader(out)
-	line, err := reader.ReadString('\n')
-	output += line
-	for err == nil {
-		if options.StreamPrint {
-			//nolint: staticcheck
-			fmt.Printf(line)
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				return output, nil
+			}
+			return output, err
 		}
-		line, err = reader.ReadString('\n')
+
+		if options.StreamPrint {
+			_, err = fmt.Fprintln(options.StreamDestination, line)
+			if err != nil {
+				return output, err
+			}
+		}
+
 		output += line
 	}
-
-	return output
 }
+
+func streamOutput(stderrIn io.ReadCloser, opts ExecOptions, result *Result) {
+	output, err := streamExecOutput(stderrIn, opts)
+	if err != nil {
+		result.Error = &ResultError{Err: err, CmdOutput: output}
+	}
+	result.Output = output
+}
+
 func CommandExist(command string) bool {
 	_, err := exec.LookPath(command)
 

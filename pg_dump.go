@@ -51,9 +51,7 @@ func (x *Dump) Exec(opts ExecOptions) Result {
 	cmd := exec.Command(PGDumpCmd, options...)
 	cmd.Env = append(os.Environ(), x.EnvPassword)
 	stderrIn, _ := cmd.StderrPipe()
-	go func() {
-		result.Output = streamExecOutput(stderrIn, opts)
-	}()
+	go streamOutput(stderrIn, opts, &result)
 	err := cmd.Start()
 	if err != nil {
 		result.Error = &ResultError{Err: err, CmdOutput: result.Output}
