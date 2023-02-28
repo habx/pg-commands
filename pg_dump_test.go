@@ -2,6 +2,7 @@ package pgcommands_test
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 	"testing"
 
@@ -102,7 +103,7 @@ func TestDump(t *testing.T) {
 		dump.EnableVerbose()
 		dump.SetupFormat("t")
 		dump.SetPath("./")
-		result := dump.Exec(pg.ExecOptions{StreamPrint: true})
+		result := dump.Exec(pg.ExecOptions{StreamPrint: true, StreamDestination: os.Stdout})
 		So(result.Error, ShouldBeNil)
 		So(result.FullCommand, ShouldNotBeEmpty)
 		So(result.File, ShouldNotBeEmpty)

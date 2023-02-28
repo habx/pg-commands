@@ -22,13 +22,14 @@ func streamExecOutput(out io.ReadCloser, options ExecOptions) (string, error) {
 			if errors.Is(err, io.EOF) {
 				return output, nil
 			}
-			return output, err
+
+			return output, fmt.Errorf("error reading output: %w", err)
 		}
 
 		if options.StreamPrint {
 			_, err = fmt.Fprintln(options.StreamDestination, line)
 			if err != nil {
-				return output, err
+				return output, fmt.Errorf("error writing output: %w", err)
 			}
 		}
 
