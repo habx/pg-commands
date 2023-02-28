@@ -45,13 +45,7 @@ func (x *Restore) Exec(filename string, opts ExecOptions) Result {
 
 	cmd.Env = append(os.Environ(), x.EnvPassword)
 	stderrIn, _ := cmd.StderrPipe()
-	go func() {
-		output, err := streamExecOutput(stderrIn, opts)
-		if err != nil {
-			result.Error = &ResultError{Err: err, CmdOutput: output}
-		}
-		result.Output = output
-	}()
+	go streamOutput(stderrIn, opts, &result)
 	err := cmd.Start()
 	if err != nil {
 		result.Error = &ResultError{Err: err, CmdOutput: result.Output}

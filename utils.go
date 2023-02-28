@@ -36,6 +36,14 @@ func streamExecOutput(out io.ReadCloser, options ExecOptions) (string, error) {
 	}
 }
 
+func streamOutput(stderrIn io.ReadCloser, opts ExecOptions, result *Result) {
+	output, err := streamExecOutput(stderrIn, opts)
+	if err != nil {
+		result.Error = &ResultError{Err: err, CmdOutput: output}
+	}
+	result.Output = output
+}
+
 func CommandExist(command string) bool {
 	_, err := exec.LookPath(command)
 
