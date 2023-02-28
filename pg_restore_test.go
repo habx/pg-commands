@@ -2,6 +2,7 @@ package pgcommands_test
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -52,7 +53,7 @@ func TestRestore(t *testing.T) {
 	Convey("Create standard restore", t, func() {
 		restore, err := pg.NewRestore(fixtures.Setup())
 		So(err, ShouldBeNil)
-		x := restore.Exec(result.File, pg.ExecOptions{StreamPrint: true})
+		x := restore.Exec(result.File, pg.ExecOptions{StreamPrint: true, StreamDestination: os.Stdout})
 		So(x.Error, ShouldBeNil)
 		So(x.FullCommand, ShouldNotBeEmpty)
 		fmt.Println(x.FullCommand)
