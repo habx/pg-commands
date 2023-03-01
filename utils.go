@@ -27,7 +27,7 @@ func streamExecOutput(out io.ReadCloser, options ExecOptions) (string, error) {
 		}
 
 		if options.StreamPrint {
-			_, err = fmt.Fprintln(options.StreamDestination, line)
+			_, err = fmt.Fprint(options.StreamDestination, line)
 			if err != nil {
 				return output, fmt.Errorf("error writing output: %w", err)
 			}
