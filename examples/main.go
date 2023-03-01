@@ -26,7 +26,7 @@ func main() {
 
 	// Log to stdout
 	// Note that any io.Writer could be assigned to StreamDestination. I'm just using stdout here for brevity.
-	// But we could write to a unix fifo file, a database, a RabbitMQ queue or whatever
+	// But we could write to a file, a database, a RabbitMQ queue or whatever
 	// We could even write to all of the above using io.MultiWriter(...)
 	dumpExec := dump.Exec(pg.ExecOptions{StreamPrint: true, StreamDestination: os.Stdout})
 	if dumpExec.Error != nil {
