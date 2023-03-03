@@ -27,12 +27,10 @@ workflows:
   tests:
     jobs:
       - go/static-tests:
-          context: golang
           github-config-private-package: false
           filters:
             <<: *filters_only_branch
       - go/tests:
-          context: golang
           github-config-private-package: false
           filters:
             <<: *filters_only_branch
@@ -40,12 +38,10 @@ workflows:
   dev:
     jobs:
       - go/static-tests:
-          context: golang
           github-config-private-package: false
           filters:
             <<: *filters_only_dev
       - go/tests:
-          context: golang
           github-config-private-package: false
           filters:
             <<: *filters_only_dev
